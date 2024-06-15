@@ -1,0 +1,27 @@
+# fly.toml app configuration file generated for albion-registry-scraper on 2024-06-14T19:21:32-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'albion-registry-scraper'
+primary_region = 'dfw'
+
+[build]
+  [build.args]
+    GO_VERSION = '1.22'
+
+[env]
+  PORT = '8080'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = false
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
