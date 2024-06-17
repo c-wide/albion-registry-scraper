@@ -140,12 +140,6 @@ AND skip_name_check = false
 ORDER BY first_seen
 LIMIT 1;
 
--- name: SetAllianceSkipName :exec
-UPDATE alliances
-SET skip_name_check = true
-WHERE alliance_id = @id
-AND region = @region;
-
 -- name: SetAllianceName :exec
 UPDATE alliances
 SET name = @name
