@@ -10,7 +10,8 @@ import (
 	"github.com/rs/zerolog"
 )
 
-const DEFAULT_TICKER_DURATION = 3 * time.Minute
+const RE_TICKER_DURATION = 3 * time.Minute
+const AN_TICKER_DURATION = 30 * time.Second
 
 type Scraper struct {
 	logger      zerolog.Logger
@@ -33,13 +34,26 @@ func New(
 	}
 }
 
-func (s *Scraper) StartTicker(ctx context.Context) {
-	s.PerformCycle(ctx)
+func (s *Scraper) StartRecentEventTicker(ctx context.Context) {
+	go func() {
+		s.PerformRecentEventCycle(ctx)
 
-	ticker := time.NewTicker(DEFAULT_TICKER_DURATION)
-	defer ticker.Stop()
+		ticker := time.NewTicker(RE_TICKER_DURATION)
+		defer ticker.Stop()
 
-	for range ticker.C {
-		s.PerformCycle(ctx)
-	}
+		for range ticker.C {
+			s.PerformRecentEventCycle(ctx)
+		}
+	}()
+}
+
+func (s *Scraper) StartAllianceNameTicker(ctx context.Context) {
+	go func() {
+		ticker := time.NewTicker(AN_TICKER_DURATION)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			s.PerformAllianceNameCycle(ctx)
+		}
+	}()
 }

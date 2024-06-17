@@ -69,9 +69,10 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	// Create scraper and start ticker
+	// Create scraper and start tickers
 	s := scraper.New(logger, queries, eventCaches, fetchers)
-	s.StartTicker(ctx)
+	s.StartRecentEventTicker(ctx)
+	s.StartAllianceNameTicker(ctx)
 
 	// Wait for SIGINT signal
 	<-ctx.Done()

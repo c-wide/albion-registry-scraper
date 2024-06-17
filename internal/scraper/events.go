@@ -12,8 +12,8 @@ const PAGE_SIZE = 50
 const MAX_OFFSET = 1000
 const REQUEST_DELAY_DURATION = 150 * time.Millisecond
 
-func (s *Scraper) PerformCycle(ctx context.Context) {
-	s.logger.Info().Msg("Starting cycle...")
+func (s *Scraper) PerformRecentEventCycle(ctx context.Context) {
+	s.logger.Info().Msg("Starting recent event cycle...")
 	cycleStart := time.Now()
 
 	var wg sync.WaitGroup
@@ -48,14 +48,31 @@ func (s *Scraper) PerformCycle(ctx context.Context) {
 			}
 			s.logger.Info().Str("region", region).Int("uniqueEventCount", len(uniqueEvents)).Msg("Finished extracting unique events")
 
-			uniqueRatio := float64(len(events)) / float64(len(uniqueEvents))
+			uniqueRatio := float64(len(uniqueEvents)) / float64(len(events))
 			s.logger.Info().Str("region", region).Float64("uniqueRatio", uniqueRatio).Send()
+
+			eventData := s.extractEventData(region, uniqueEvents)
+
+			eCounts, err := s.persistEntities(ctx, region, eventData)
+			if err != nil {
+				s.logger.Error().Err(err).Str("region", region).Msg("Unable to create new entities")
+				return
+			}
+
+			s.logger.Info().Str("region", region).Interface("entityCounts", eCounts).Msg("Successfully persisted entities")
+
+			mCounts, err := s.persistMemberships(ctx, region, eventData)
+			if err != nil {
+				s.logger.Error().Err(err).Str("region", region).Msg("Failed to process player memberships")
+			}
+
+			s.logger.Info().Str("region", region).Interface("membershipCounts", mCounts).Msg("Successfully persisted memberships")
 		}(region, f)
 	}
 
 	wg.Wait()
 
-	s.logger.Info().Float64("cycleDuration", time.Since(cycleStart).Seconds()).Msg("Cycle finished")
+	s.logger.Info().Float64("eventCycleDuration", time.Since(cycleStart).Seconds()).Msg("Recent event cycle finished")
 }
 
 func fetchAllRecentEvents(ctx context.Context, f *fetcher.Fetcher, pageSize, maxOffset int) ([]fetcher.KillboardEvent, error) {
