@@ -151,7 +151,6 @@ SELECT alliance_id
 FROM alliances
 WHERE region = $1
 AND name IS NULL
-AND skip_name_check = false
 ORDER BY first_seen
 LIMIT 1
 `
