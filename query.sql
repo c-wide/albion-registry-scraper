@@ -136,8 +136,16 @@ SELECT alliance_id
 FROM alliances
 WHERE region = @region
 AND name IS NULL
+AND skip_name_check = false
 ORDER BY first_seen
 LIMIT 1;
+
+-- name: SetAllianceSkipName :exec
+UPDATE alliances
+SET skip_name_check = true
+WHERE alliance_id = @id
+AND region = @region
+AND skip_name_check = false;
 
 -- name: SetAllianceName :exec
 UPDATE alliances

@@ -11,12 +11,13 @@ import (
 )
 
 type Alliance struct {
-	Name       *string
-	Tag        string
-	AllianceID string
-	Region     string
-	FirstSeen  time.Time
-	LastSeen   time.Time
+	Name          *string
+	Tag           string
+	AllianceID    string
+	Region        string
+	SkipNameCheck bool
+	FirstSeen     time.Time
+	LastSeen      time.Time
 }
 
 type Guild struct {

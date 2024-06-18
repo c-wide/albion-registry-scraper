@@ -3,6 +3,7 @@ package scraper
 import (
 	"context"
 	"errors"
+	"strings"
 	"sync"
 	"time"
 
@@ -37,6 +38,21 @@ func (s *Scraper) PerformAllianceNameCycle(ctx context.Context) {
 			allianceInfo, err := fetcher.FetchAllianceInfo(ctx, allianceID)
 			if err != nil {
 				s.logger.Error().Err(err).Str("region", region).Msg("Failed to fetch alliance information from Albion Online API")
+
+				if strings.Contains(err.Error(), "404") {
+					err = s.queries.SetAllianceSkipName(ctx, database.SetAllianceSkipNameParams{
+						ID:     allianceID,
+						Region: region,
+					})
+
+					if err != nil {
+						s.logger.Error().Err(err).Str("region", region).Str("allianceId", allianceID).Msg("Failed to set alliance skip name")
+						return
+					}
+
+					s.logger.Info().Str("region", region).Str("allianceId", allianceID).Msg("Set alliance skip name successfully")
+				}
+
 				return
 			}
 

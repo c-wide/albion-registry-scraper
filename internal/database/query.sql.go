@@ -151,6 +151,7 @@ SELECT alliance_id
 FROM alliances
 WHERE region = $1
 AND name IS NULL
+AND skip_name_check = false
 ORDER BY first_seen
 LIMIT 1
 `
@@ -177,6 +178,24 @@ type SetAllianceNameParams struct {
 
 func (q *Queries) SetAllianceName(ctx context.Context, arg SetAllianceNameParams) error {
 	_, err := q.db.Exec(ctx, setAllianceName, arg.Name, arg.ID, arg.Region)
+	return err
+}
+
+const setAllianceSkipName = `-- name: SetAllianceSkipName :exec
+UPDATE alliances
+SET skip_name_check = true
+WHERE alliance_id = $1
+AND region = $2
+AND skip_name_check = false
+`
+
+type SetAllianceSkipNameParams struct {
+	ID     string
+	Region string
+}
+
+func (q *Queries) SetAllianceSkipName(ctx context.Context, arg SetAllianceSkipNameParams) error {
+	_, err := q.db.Exec(ctx, setAllianceSkipName, arg.ID, arg.Region)
 	return err
 }
 
