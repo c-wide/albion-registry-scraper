@@ -1,14 +1,19 @@
 -- name: UpsertPlayers :many
-INSERT INTO players (player_id, name, region, first_seen, last_seen)
+INSERT INTO players (player_id, name, region, avatar, avatar_ring, first_seen, last_seen)
 VALUES (
     unnest(@ids::varchar(50)[]),
     unnest(@names::varchar(25)[]),
     unnest(@regions::varchar(50)[]),
+    unnest(@avatars::varchar(255)[]),
+    unnest(@avatar_rings::varchar(255)[]),
     unnest(@fsts::timestamptz[]),
     unnest(@lsts::timestamptz[])
 )
 ON CONFLICT (player_id, region) DO UPDATE
-SET last_seen = EXCLUDED.last_seen
+SET 
+    last_seen = EXCLUDED.last_seen,
+    avatar = EXCLUDED.avatar,
+    avatar_ring = EXCLUDED.avatar_ring
 RETURNING player_id, first_seen;
 
 -- name: UpsertGuilds :many

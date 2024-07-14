@@ -378,25 +378,32 @@ func (q *Queries) UpsertGuilds(ctx context.Context, arg UpsertGuildsParams) ([]U
 }
 
 const upsertPlayers = `-- name: UpsertPlayers :many
-INSERT INTO players (player_id, name, region, first_seen, last_seen)
+INSERT INTO players (player_id, name, region, avatar, avatar_ring, first_seen, last_seen)
 VALUES (
     unnest($1::varchar(50)[]),
     unnest($2::varchar(25)[]),
     unnest($3::varchar(50)[]),
-    unnest($4::timestamptz[]),
-    unnest($5::timestamptz[])
+    unnest($4::varchar(255)[]),
+    unnest($5::varchar(255)[]),
+    unnest($6::timestamptz[]),
+    unnest($7::timestamptz[])
 )
 ON CONFLICT (player_id, region) DO UPDATE
-SET last_seen = EXCLUDED.last_seen
+SET 
+    last_seen = EXCLUDED.last_seen,
+    avatar = EXCLUDED.avatar,
+    avatar_ring = EXCLUDED.avatar_ring
 RETURNING player_id, first_seen
 `
 
 type UpsertPlayersParams struct {
-	Ids     []string
-	Names   []string
-	Regions []string
-	Fsts    []time.Time
-	Lsts    []time.Time
+	Ids         []string
+	Names       []string
+	Regions     []string
+	Avatars     []string
+	AvatarRings []string
+	Fsts        []time.Time
+	Lsts        []time.Time
 }
 
 type UpsertPlayersRow struct {
@@ -409,6 +416,8 @@ func (q *Queries) UpsertPlayers(ctx context.Context, arg UpsertPlayersParams) ([
 		arg.Ids,
 		arg.Names,
 		arg.Regions,
+		arg.Avatars,
+		arg.AvatarRings,
 		arg.Fsts,
 		arg.Lsts,
 	)

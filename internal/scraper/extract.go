@@ -46,11 +46,13 @@ func (s *Scraper) extractEventData(region string, events []fetcher.KillboardEven
 			if !ok {
 				eventData.Players[player.ID] = &EventDataPlayer{
 					Info: database.Player{
-						Name:      player.Name,
-						PlayerID:  player.ID,
-						Region:    region,
-						FirstSeen: timestamp,
-						LastSeen:  timestamp,
+						Name:       player.Name,
+						PlayerID:   player.ID,
+						Region:     region,
+						Avatar:     &player.Avatar,
+						AvatarRing: &player.AvatarRing,
+						FirstSeen:  timestamp,
+						LastSeen:   timestamp,
 					},
 				}
 			} else {

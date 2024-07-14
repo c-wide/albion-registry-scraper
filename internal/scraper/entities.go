@@ -38,6 +38,8 @@ func upsertPlayers(ctx context.Context, queries *database.Queries, eventData *Ev
 	ids := make([]string, 0, pCount)
 	names := make([]string, 0, pCount)
 	regions := make([]string, 0, pCount)
+	avatars := make([]string, 0, pCount)
+	avatarRings := make([]string, 0, pCount)
 	fsts := make([]time.Time, 0, pCount)
 	lsts := make([]time.Time, 0, pCount)
 
@@ -45,16 +47,20 @@ func upsertPlayers(ctx context.Context, queries *database.Queries, eventData *Ev
 		ids = append(ids, player.Info.PlayerID)
 		names = append(names, player.Info.Name)
 		regions = append(regions, player.Info.Region)
+		avatars = append(avatars, *player.Info.Avatar)
+		avatarRings = append(avatarRings, *player.Info.AvatarRing)
 		fsts = append(fsts, player.Info.FirstSeen)
 		lsts = append(lsts, player.Info.LastSeen)
 	}
 
 	rows, err := queries.UpsertPlayers(ctx, database.UpsertPlayersParams{
-		Ids:     ids,
-		Names:   names,
-		Regions: regions,
-		Fsts:    fsts,
-		Lsts:    lsts,
+		Ids:         ids,
+		Names:       names,
+		Regions:     regions,
+		Avatars:     avatars,
+		AvatarRings: avatarRings,
+		Fsts:        fsts,
+		Lsts:        lsts,
 	})
 
 	if err != nil {

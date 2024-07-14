@@ -16,6 +16,8 @@ type Player struct {
 	GuildID     string `json:"GuildId"`
 	AllianceTag string `json:"AllianceName"`
 	AllianceID  string `json:"AllianceId"`
+	Avatar      string `json:"Avatar"`
+	AvatarRing  string `json:"AvatarRing"`
 }
 
 type KillboardEvent struct {

@@ -39,11 +39,13 @@ type GuildAllianceMembership struct {
 }
 
 type Player struct {
-	Name      string
-	PlayerID  string
-	Region    string
-	FirstSeen time.Time
-	LastSeen  time.Time
+	Name       string
+	PlayerID   string
+	Region     string
+	Avatar     *string
+	AvatarRing *string
+	FirstSeen  time.Time
+	LastSeen   time.Time
 }
 
 type PlayerGuildMembership struct {
