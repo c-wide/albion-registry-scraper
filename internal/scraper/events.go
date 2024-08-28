@@ -31,7 +31,7 @@ func (s *Scraper) PerformRecentEventCycle(ctx context.Context) {
 			if err != nil {
 				s.logger.Error().Err(err).Str("region", region).Msg("An error occurred while fetching events")
 			}
-			s.logger.Info().Str("region", region).Float64("fetchDuration", time.Since(fetchStart).Seconds()).Msg("Finished fetching events")
+			s.logger.Info().Str("region", region).Int("eventCount", len(events)).Float64("fetchDuration", time.Since(fetchStart).Seconds()).Msg("Finished fetching events")
 
 			if len(events) == 0 {
 				s.logger.Info().Str("region", region).Msg("No events to process")
