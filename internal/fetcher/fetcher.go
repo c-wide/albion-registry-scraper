@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const DEFAULT_TIMEOUT_DURATION = 30 * time.Second
@@ -22,7 +24,7 @@ func New(baseURL string) *Fetcher {
 }
 
 func (f *Fetcher) FetchRecentEvents(ctx context.Context, pageSize, offset int) ([]KillboardEvent, error) {
-	url := fmt.Sprintf("%s/events?limit=%d&offset=%d", f.baseURL, pageSize, offset)
+	url := fmt.Sprintf("%s/events?limit=%d&offset=%d&random=%s", f.baseURL, pageSize, offset, uuid.New())
 	response, err := fetch[[]KillboardEvent](ctx, f, "GET", url)
 	if err != nil {
 		return nil, err
@@ -44,6 +46,9 @@ func fetch[T any](ctx context.Context, f *Fetcher, method, path string) (*T, err
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http request: %w", err)
 	}
+
+	req.Header.Set("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+	req.Header.Set("Pragma", "no-cache")
 
 	httpResponse, err := f.httpClient.Do(req)
 	if err != nil {
