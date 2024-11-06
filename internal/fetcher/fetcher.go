@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const DEFAULT_TIMEOUT_DURATION = 30 * time.Second
+const DEFAULT_TIMEOUT_DURATION = 60 * time.Second
 
 func New(baseURL string) *Fetcher {
 	httpClient := &http.Client{

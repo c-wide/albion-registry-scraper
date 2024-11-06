@@ -41,8 +41,15 @@ func (s *Scraper) StartRecentEventTicker(ctx context.Context) {
 		ticker := time.NewTicker(RE_TICKER_DURATION)
 		defer ticker.Stop()
 
+		inProgress := false
 		for range ticker.C {
+			if inProgress {
+				continue
+			}
+
+			inProgress = true
 			s.PerformRecentEventCycle(ctx)
+			inProgress = false
 		}
 	}()
 }
